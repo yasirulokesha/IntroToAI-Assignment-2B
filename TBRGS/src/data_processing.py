@@ -1,7 +1,7 @@
 import pandas as pd
 
-traffic_csv_path = "Scats Data October 2006.csv"
-coords_csv_path = "Traffic_Count_Locations_with_LONG_LAT.csv"
+traffic_csv_path = "TBRGS/data/raw/Scats Data October 2006.csv"
+coords_csv_path = "TBRGS/data/raw/Traffic_Count_Locations_with_LONG_LAT.csv"
 
 def load_and_process_traffic_data(traffic_csv_path, coords_csv_path):
     # Load traffic volume data (skip first row with V labels)
@@ -52,4 +52,4 @@ def load_and_process_traffic_data(traffic_csv_path, coords_csv_path):
 df = load_and_process_traffic_data(traffic_csv_path, coords_csv_path)
 
 # Preview
-print(df.head())
+print(df)
