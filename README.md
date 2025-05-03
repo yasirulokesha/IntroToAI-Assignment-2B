@@ -32,7 +32,7 @@ TBRGS/
 │   ├── EDA.ipynb                   # Exploratory Data Analysis
 │   ├── LSTM_Model.ipynb
 │   ├── GRU_Model.ipynb
-│   └── Other_Model.ipynb          # 3rd ML model (e.g., Random Forest, ARIMA, Transformer)
+│   └── Other_Model.ipynb     ,     # 3rd ML model (e.g., Random Forest, ARIMA, Transformer)
 │
 ├── models/                         # Trained models and training scripts
 │   ├── lstm_model.py
@@ -119,6 +119,7 @@ cd TBRGS
 
 ### Step 2: Install Dependencies
 Ensure you have Python 3.9+ installed, then:
+Make an Anconda environment and install with followings
 ```bash
 pip install -r requirements.txt
 ```
