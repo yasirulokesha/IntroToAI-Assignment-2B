@@ -36,7 +36,7 @@ TBRGS/
 │
 ├── models/                         # Trained models and training scripts
 │   ├── lstm_model.py
-│   ├── gru_model.py
+│   ├── gru_model.py c
 │   ├── other_model.py
 │   └── saved_models/
 │       ├── lstm.pth
