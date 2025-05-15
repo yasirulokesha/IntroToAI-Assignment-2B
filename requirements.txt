@@ -10,3 +10,4 @@ networkx
 opencv-python
 PyQt5
 geopy
+python@3.11.11
