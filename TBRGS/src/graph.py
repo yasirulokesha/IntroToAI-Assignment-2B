@@ -38,13 +38,6 @@ class SCATSNode:
         # Calculate the distance using geopy
         return geodesic(coord1, coord2).kilometers
     
-    def time_cost_to(self, other):
-        # Assuming a constant speed of 60 km/h
-        speed = 60.0
-        distance = self.distance_to(other)
-        time_cost = distance / speed * 60  # Convert to minutes
-        return time_cost
-    
 # The SCATS Link class
 class RoadGraph:
     # Create a graph with nodes and edges
@@ -59,10 +52,10 @@ class RoadGraph:
             print(f"Node {node.id} already exists.")
             
     # Add a directed edge to the graph
-    def add_edge(self, from_node, to_node, cost):
+    def add_edge(self, from_node, to_node, time_cost):
         if from_node not in self.edges:
             self.edges[from_node] = []
-        self.edges[from_node].append((to_node, cost))
+        self.edges[from_node].append((to_node, time_cost))
     
     # Print the graph (NODES + EDGES)
     def print_graph(self):
