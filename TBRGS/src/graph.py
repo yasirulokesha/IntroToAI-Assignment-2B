@@ -8,14 +8,23 @@ from geopy.distance import geodesic
 
 # The SCATS Site Node class
 class SCATSNode:
-    def __init__(self, site_id, site_location, site_latitude, site_longitude):
+    def __init__(self, site_id, road_1, road_2, site_latitude, site_longitude ):
         self.id = site_id
-        self.location = site_location
+        self.road_1 = road_1
+        self.road_2 = road_2
         self.latitude = site_latitude
         self.longitude = site_longitude
+        self.neighbors = []
+        
+    def add_neighbor(self, neighbor_node):
+        if(self.neighbors.count >= 4):
+            print(f"Node {self.id} already has 4 neighbors.")
+            return
+        else:
+            self.neighbors.append(neighbor_node)
 
     def __repr__(self):
-        return f"SCATSNode({self.id}, {self.location}, {self.latitude}, {self.longitude})"
+        return f"SCATSNode({self.id}, {self.road_1}, {self.road_2}, {self.latitude}, {self.longitude})"
     
     def distance_to(self, other):
         self_lat = float(self.latitude)
@@ -29,8 +38,15 @@ class SCATSNode:
         # Calculate the distance using geopy
         return geodesic(coord1, coord2).kilometers
     
+    def time_cost_to(self, other):
+        # Assuming a constant speed of 60 km/h
+        speed = 60.0
+        distance = self.distance_to(other)
+        time_cost = distance / speed * 60  # Convert to minutes
+        return time_cost
+    
 # The SCATS Link class
-class SCATSLink:
+class RoadGraph:
     # Create a graph with nodes and edges
     def __init__(self):
         self.nodes = {} 
@@ -41,4 +57,20 @@ class SCATSLink:
             self.nodes[node.id] = node
         else:
             print(f"Node {node.id} already exists.")
+            
+    # Add a directed edge to the graph
+    def add_edge(self, from_node, to_node, cost):
+        if from_node not in self.edges:
+            self.edges[from_node] = []
+        self.edges[from_node].append((to_node, cost))
+    
+    # Print the graph (NODES + EDGES)
+    def print_graph(self):
+        print("SCATS:")
+        for node_id, node in self.nodes.items():
+            print(f"  SCATS Node {node_id}: {node.road_1} <-> {node.road_2} (Lat: {node.latitude}, Long: {node.longitude})")
         
+        print("\nEdges:")
+        for from_node, neighbors in self.edges.items():
+            for (to_node, cost) in neighbors:
+                print(f"  {from_node} -> {to_node} (Cost: {cost})")
