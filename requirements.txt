@@ -10,5 +10,4 @@ networkx
 opencv-python
 PyQt5
 geopy
-osmnx
-python@3.11.11
+python = 3.11.11
