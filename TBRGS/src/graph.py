@@ -17,7 +17,7 @@ class SCATSNode:
         self.neighbors = []
         
     def add_neighbor(self, neighbor_node):
-        if(self.neighbors.count >= 4):
+        if(len(self.neighbors) >= 4):
             print(f"Node {self.id} already has 4 neighbors.")
             return
         else:
@@ -57,6 +57,7 @@ class RoadGraph:
         if from_node not in self.edges:
             self.edges[from_node] = []
         self.edges[from_node].append((to_node, time_cost))
+        self.nodes[from_node].add_neighbor(to_node)
     
     # Print the graph (NODES + EDGES)
     def print_graph(self):
@@ -67,4 +68,4 @@ class RoadGraph:
         print("\nEdges:")
         for from_node, neighbors in self.edges.items():
             for (to_node, cost) in neighbors:
-                print(f"  {from_node} -> {to_node} (Cost: {cost})")
+                print(f"  {from_node} -> {to_node} (time_cost: {cost})")
