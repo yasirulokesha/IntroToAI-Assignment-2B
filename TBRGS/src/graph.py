@@ -37,6 +37,7 @@ class SCATSNode:
         
         # Calculate the distance using geopy
         return geodesic(coord1, coord2).kilometers
+     
     
 # The SCATS Link class
 class RoadGraph:
@@ -61,7 +62,7 @@ class RoadGraph:
     def print_graph(self):
         print("SCATS:")
         for node_id, node in self.nodes.items():
-            print(f"  SCATS Node {node_id}: {node.road_1} <-> {node.road_2} (Lat: {node.latitude}, Long: {node.longitude})")
+            print(f"  SCATS ID {node_id}: {node.road_1} <-> {node.road_2} (Lat: {node.latitude}, Long: {node.longitude})")
         
         print("\nEdges:")
         for from_node, neighbors in self.edges.items():

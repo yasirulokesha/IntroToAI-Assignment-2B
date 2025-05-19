@@ -1,10 +1,12 @@
 import pandas as pd
 import numpy as np
+# from data_processing import process_scats_data
 from models.LSTM_model import LSTM_prediction
-from graph import RoadGraph, SCATSNode
-from data_processing import process_scats_data
 
 def calculate_travel_time(graph, origin_id, destination_id, timestamp):
+    
+    print(f"Calculating travel time from {origin_id} to {destination_id} ")
+    
     # Get the origin and destination nodes
     origin_node = graph.nodes[int(origin_id)]
     destination_node = graph.nodes[int(destination_id)]
@@ -43,13 +45,13 @@ def calculate_travel_time(graph, origin_id, destination_id, timestamp):
         speed = 60.0
         
     # Calculate the travel time in minutes
-    travel_time = ((distance / speed) + 30 ) * 60  # Convert to minutes
+    travel_time = ((distance / speed) ) * 60 + 0.5 # Convert to minutes adding a 30 second buffer
     
-    print(f"Travel time from {origin_id} to {destination_id} at {timestamp}: {travel_time:.2f} minutes")
+    # print(f"Travel time from {origin_id} to {destination_id} at {timestamp}: {travel_time:.2f} minutes")
 
-    return travel_time
+    return f"{travel_time:.2f}"
 
 
 # if __name__ =="__main__":
-#     calculate_travel_time(process_scats_data(), "2000", "2200", "2006-11-01 00:00")
+#     calculate_travel_time(process_scats_data(), "970", "3685", "2006-11-01 00:00")
     
