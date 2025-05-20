@@ -1,5 +1,6 @@
 import sys
 
+from algorithms.yens_algorithm import print_top_k_routes_by_travel_time
 from data_processing import process_scats_data
 
 REQUIRED_PYTHON_VERSION = (3, 11, 11)
@@ -17,6 +18,8 @@ def main():
     SCAT_Graph = process_scats_data()
     # Print the graph
     SCAT_Graph.print_graph()
+    
+    print_top_k_routes_by_travel_time(SCAT_Graph, 970, 2000, k=5)
     
         
 if __name__ == "__main__":

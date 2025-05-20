@@ -17,7 +17,7 @@ class SCATSNode:
         self.neighbors = []
         
     def add_neighbor(self, neighbor_node):
-        if(len(self.neighbors) >= 4):
+        if(len(self.neighbors) >= 5):
             print(f"Node {self.id} already has 4 neighbors.")
             return
         else:

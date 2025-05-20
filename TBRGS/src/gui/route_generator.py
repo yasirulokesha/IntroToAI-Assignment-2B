@@ -62,6 +62,8 @@ def plot_route_map(router):
     # Map SCATS Numbers to OSM node IDs
     scats_dict = dict(zip(scats_sites['SCATS Number'], scats_sites['osmid']))
     route_osm = [scats_dict[s] for s in route_scats if s in scats_dict]
+    
+    return plt
 
 
 

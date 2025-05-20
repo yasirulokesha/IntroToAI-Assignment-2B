@@ -2,19 +2,13 @@ import networkx as nx
 from itertools import islice
 
 def print_top_k_routes_by_travel_time(G, source, target, k=5):
-    """
-    Finds and prints the top-k fastest SCATS routes in graph G
-    using 'travel_time' as edge weight.
-
-    Parameters:
-        G: networkx.Graph
-        source: int - origin site_id
-        target: int - destination site_id
-        k: int - number of routes to return
-    """
-    if source not in G or target not in G:
+    # if source not in G or target not in G:
+    #     print(f"❌ One or both site IDs not found in the graph: {source}, {target}")
+    #     return 
+    
+    if source not in G.nodes or target not in G.nodes:
         print(f"❌ One or both site IDs not found in the graph: {source}, {target}")
-        return 
+        return
 
     print(f"\n🔍 Finding top {k} fastest SCATS routes from {source} to {target}...\n")
 
