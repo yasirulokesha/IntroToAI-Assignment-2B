@@ -4,9 +4,6 @@ __pycache__/
 *$py.class
 *.pyc
 
-TBRGS/
-*.DS_Store
-
 # cache
 cache/
 *.json
