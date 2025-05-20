@@ -63,9 +63,9 @@ class RoadGraph:
     def print_graph(self):
         print("SCATS:")
         for node_id, node in self.nodes.items():
-            print(f"  SCATS ID {node_id}: {node.road_1} <-> {node.road_2} (Lat: {node.latitude}, Long: {node.longitude})")
+            print(f"  SCATS {node_id}: {node.road_1} <-> {node.road_2} (Lat: {node.latitude}, Long: {node.longitude})")
         
-        print("\nEdges:")
+        print("\nConnections:")
         for from_node, neighbors in self.edges.items():
             for (to_node, cost) in neighbors:
                 print(f"  {from_node} -> {to_node} (time_cost: {cost})")

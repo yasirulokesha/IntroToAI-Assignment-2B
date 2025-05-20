@@ -14,7 +14,7 @@ def print_top_k_routes_by_travel_time(G, source, target, k=5):
     """
     if source not in G or target not in G:
         print(f"❌ One or both site IDs not found in the graph: {source}, {target}")
-        return
+        return 
 
     print(f"\n🔍 Finding top {k} fastest SCATS routes from {source} to {target}...\n")
 
