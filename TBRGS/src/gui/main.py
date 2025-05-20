@@ -1,74 +1,78 @@
+import pandas as pd
 import tkinter as tk
 from tkinter import ttk
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-class TBRGS_GUI:
-    def __init__(self, master):
-        self.master = master
-        master.title("Traffic-Based Route Guidance System")
-        
-        # Create main frames
-        self.input_frame = ttk.LabelFrame(master, text="Input Parameters", padding="10")
-        self.input_frame.pack(fill=tk.X, padx=10, pady=5)
-        
-        self.visualization_frame = ttk.Frame(master)
-        self.visualization_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
-        
-        self.control_frame = ttk.Frame(master)
-        self.control_frame.pack(fill=tk.X, padx=10, pady=5)
-        
-        # Add input widgets
-        self.create_input_widgets()
-        self.create_visualization_widgets()
-        self.create_control_buttons()
-    
-    def create_input_widgets(self):
-        # Origin input
-        ttk.Label(self.input_frame, text="Origin:").grid(row=0, column=0, sticky=tk.W)
-        self.origin_entry = ttk.Entry(self.input_frame)
-        self.origin_entry.grid(row=0, column=1, sticky=tk.W)
-        
-        # Destination input
-        ttk.Label(self.input_frame, text="Destination:").grid(row=1, column=0, sticky=tk.W)
-        self.dest_entry = ttk.Entry(self.input_frame)
-        self.dest_entry.grid(row=1, column=1, sticky=tk.W)
-        
-        # Model selection
-        ttk.Label(self.input_frame, text="Model:").grid(row=2, column=0, sticky=tk.W)
-        self.model_var = tk.StringVar()
-        self.model_dropdown = ttk.Combobox(self.input_frame, textvariable=self.model_var, 
-                                          values=["LSTM", "GRU", "Third Algorithm"])
-        self.model_dropdown.grid(row=2, column=1, sticky=tk.W)
-        self.model_dropdown.current(0)
+# Sample SCATS site list (40 dummy site numbers)
+# scats_sites = [str(site_id) for site_id in range(970, 1010)]
 
-    
-    def create_visualization_widgets(self):
-        # Prediction graph
-        self.prediction_canvas = tk.Canvas(self.visualization_frame, bg='white')
-        self.prediction_canvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        
-        # Route display
-        self.route_text = tk.Text(self.visualization_frame, height=10)
-        self.route_text.pack(side=tk.BOTTOM, fill=tk.X)
-    
-    def create_control_buttons(self):
-        ttk.Button(self.control_frame, text="Train Model", command=self.train_model).pack(side=tk.LEFT, padx=5)
-        ttk.Button(self.control_frame, text="Predict Traffic", command=self.predict_traffic).pack(side=tk.LEFT, padx=5)
-        ttk.Button(self.control_frame, text="Find Routes", command=self.find_routes).pack(side=tk.LEFT, padx=5)
-        ttk.Button(self.control_frame, text="Exit", command=self.master.quit).pack(side=tk.RIGHT, padx=5)
-    
-    def train_model(self):
-        # Implement model training logic
-        pass
-    
-    def predict_traffic(self):
-        # Implement traffic prediction logic
-        pass
-    
-    def find_routes(self):
-        # Implement route finding logic
-        pass
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    gui = TBRGS_GUI(root)
-    root.mainloop()
+# Read only specific columns
+df = pd.read_csv("TBRGS/data/processed/map_data.csv", usecols=["SCATS Number", "Location"])
+
+# Combine the two columns into a single string and store in a list
+scats_sites = [f"{int(row['SCATS Number'])} - {row['Location']}" for _, row in df.iterrows()]
+
+
+# Generate time options (00:00 to 23:45 in 15 min intervals)
+time_options = [f"{h:02}:{m:02}" for h in range(24) for m in (0, 15, 30, 45)]
+
+# Initialize main window
+root = tk.Tk()
+root.title("TBRGS")
+root.geometry("1200x700")
+
+# Frames: Left 30%, Right 70%
+left_frame = tk.Frame(root, width=480, bg="white", padx=20, pady=20)
+left_frame.pack(side="left", fill="y")
+
+right_frame = tk.Frame(root, bg="lightgray")
+right_frame.pack(side="right", fill="both", expand=True)
+
+# ----- LEFT PANEL -----
+# Left Panel Header
+tk.Label(left_frame, text="TBRGS", font=("Helvetica", 20, "bold"), fg="black", bg="white").pack(pady=(0, 20))
+
+# Dropdown field generator
+def add_dropdown(label, options):
+    tk.Label(left_frame, text=label, bg="white").pack(anchor="w")
+    cb = ttk.Combobox(left_frame, values=options, state="readonly")
+    cb.current(0)
+    cb.pack(fill="x", pady=(0, 10))
+    return cb
+
+# Dropdowns
+orig_cb = add_dropdown("ORIGINATION", scats_sites)
+dest_cb = add_dropdown("DESTINATION", scats_sites)
+day_cb = add_dropdown("DAY", ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"])
+time_cb = add_dropdown("TIME", time_options)
+model_cb = add_dropdown("MODEL", ["LSTM", "GRU"])
+ 
+# Search Button
+tk.Button(left_frame, text="SEARCH", width=20).pack(pady=30)
+
+# ----- RIGHT PANEL: Add Route Blocks -----
+# Function to add route block to right frame
+def add_route(route_number, route_path):
+    frame = tk.Frame(right_frame, bg="white", padx=10, pady=10)
+    frame.pack(fill="x", padx=20, pady=15)
+
+    tk.Label(frame, text=f"ROUTE {route_number}", font=("Helvetica", 12, "bold"), bg="white").pack(anchor="w")
+    tk.Label(frame, text=route_path, bg="white").pack(anchor="w", pady=(0, 10))
+
+    # Dummy matplotlib plot
+    fig, ax = plt.subplots(figsize=(6, 2))
+    ax.plot([0, 1, 2], [0, 1, 0], marker='o')
+    ax.set_title(f"Route {route_number} Visualization")
+    ax.axis('off')
+    canvas = FigureCanvasTkAgg(fig, master=frame)
+    canvas.draw()
+    canvas.get_tk_widget().pack()
+
+# Example routes
+add_route(1, "970 -> 2000 -> 5261")
+add_route(2, "970 -> 3685 -> 5261")
+add_route(3, "970 -> 3685 -> 2000 -> 5261")
+
+root.mainloop()
