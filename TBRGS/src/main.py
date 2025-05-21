@@ -1,6 +1,7 @@
 import sys
 
-from algorithms.yens_algorithm import print_top_k_routes_by_travel_time
+from gui.route_generator import plot_route_map
+from algorithms.yens_algorithm import find_k_shortest_routes
 from data_processing import process_scats_data
 
 REQUIRED_PYTHON_VERSION = (3, 11, 11)
@@ -19,7 +20,22 @@ def main():
     # Print the graph
     SCAT_Graph.print_graph()
     
-    print_top_k_routes_by_travel_time(SCAT_Graph, 970, 2000, k=5)
+    paths = find_k_shortest_routes(SCAT_Graph, 2200, 3804, k=5)
+    
+    plots = []
+    
+    # print(paths, "\n")
+    for path in paths:
+        print(path[0], ":", path[1])
+        print("Total cost:", path[0])
+        print("Path:", " -> ".join(map(str, path[1])))
+        print()
+        plots.append(plot_route_map(path[1]))
+        
+    for plot in plots:
+        plot.show()
+    
+    # dashboard_interface()
     
         
 if __name__ == "__main__":

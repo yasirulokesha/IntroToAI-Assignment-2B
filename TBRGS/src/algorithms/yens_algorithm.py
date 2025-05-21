@@ -1,32 +1,34 @@
 import networkx as nx
 from itertools import islice
 
-def print_top_k_routes_by_travel_time(G, source, target, k=5):
-    # if source not in G or target not in G:
-    #     print(f"❌ One or both site IDs not found in the graph: {source}, {target}")
-    #     return 
-    
-    if source not in G.nodes or target not in G.nodes:
-        print(f"❌ One or both site IDs not found in the graph: {source}, {target}")
-        return
+import heapq
 
-    print(f"\n🔍 Finding top {k} fastest SCATS routes from {source} to {target}...\n")
+def find_k_shortest_routes(graph, start_id, end_id, k=5):
+    if start_id not in graph.nodes or end_id not in graph.nodes:
+        print("Invalid node IDs.")
+        return []
 
-    try:
-        routes = islice(nx.shortest_simple_paths(G, source, target, weight='travel_time'), k)
+    # Each path: (total_cost, [path_nodes])
+    paths_found = []
+    queue = [(0, [start_id])]  # min-heap priority queue: (cost, path)
 
-        for idx, path in enumerate(routes, 1):
-            # Calculate total travel time for this route
-            total_time = 0
-            for i in range(len(path) - 1):
-                a, b = path[i], path[i + 1]
-                time = G[a][b]['travel_time']
-                total_time += time
+    visited_paths = set()
 
-            # Print route and time
-            route_str = ' → '.join(str(sid) for sid in path)
-            print(f"Route {idx}: {route_str}")
-            print(f"  ⏱️ Estimated Travel Time: {total_time:.2f} seconds\n")
+    while queue and len(paths_found) < k:
+        cost, path = heapq.heappop(queue)
+        last_node = path[-1]
 
-    except nx.NetworkXNoPath:
-        print("❗ No path found between the selected SCATS sites.")
+        # If path ends at destination and is unique, store it
+        if last_node == end_id and tuple(path) not in visited_paths:
+            paths_found.append((cost, path))
+            visited_paths.add(tuple(path))
+            continue
+
+        if last_node in graph.edges:
+            for neighbor_id, edge_cost in graph.edges[last_node]:
+                if neighbor_id not in path:  # Avoid cycles
+                    new_path = path + [neighbor_id]
+                    new_cost = float(cost) + float(edge_cost)
+                    heapq.heappush(queue, (new_cost, new_path))
+
+    return paths_found

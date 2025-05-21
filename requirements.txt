@@ -11,4 +11,5 @@ opencv-python
 PyQt5
 geopy
 osmnx
+customtkinter
 python = 3.11.11
