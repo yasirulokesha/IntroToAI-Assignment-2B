@@ -36,9 +36,7 @@ def main():
         plot.show()
     
     # dashboard_interface()
-    
-    #gotta look like I did something
-    # print("Hello world!")
+ 
     
         
 if __name__ == "__main__":
