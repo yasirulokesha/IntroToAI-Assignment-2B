@@ -4,8 +4,27 @@ from gui.route_generator import plot_route_map
 from algorithms.yens_algorithm import find_k_shortest_routes
 from data_processing import process_scats_data
 
+import tkinter as tk
+from gui.dashboard import TBRGSApp
+
 REQUIRED_PYTHON_VERSION = (3, 11, 11)
 current_version = sys.version_info[:3]
+
+def show_splash():
+        splash = tk.Toplevel()
+        splash.overrideredirect(True)  # Removes title bar
+        splash.configure(bg="white")
+
+        width, height = 400, 300
+        x = (splash.winfo_screenwidth() - width) // 2
+        y = (splash.winfo_screenheight() - height) // 2
+        splash.geometry(f"{width}x{height}+{x}+{y}")
+
+        # Optional: add a loading message or GIF
+        label = tk.Label(splash, text="Loading nodes and edges...", font=("Helvetica", 14), bg="white", fg="black")
+        label.pack(expand=True)
+
+        return splash
 
 def main():
     if current_version != REQUIRED_PYTHON_VERSION:
@@ -14,29 +33,24 @@ def main():
         sys.exit(1)
     else:
         print(f"✅ Runing Python version : {current_version[0]}.{current_version[1]}.{current_version[2]}")
-        
+
+    root = tk.Tk()
+    root.withdraw()  # Hide root while loading
+
+    splash = show_splash()
+    root.update()
+
     # Make the main graph object
-    SCAT_Graph = process_scats_data()
+    SCATS_Graph = process_scats_data()
     # Print the graph
-    SCAT_Graph.print_graph()
+    SCATS_Graph.print_graph()
+
+    splash.destroy()
+    root.deiconify()  # Show main window
     
-    paths = find_k_shortest_routes(SCAT_Graph, 2200, 3804, k=5)
+    app = TBRGSApp(root, SCATS_Graph)
     
-    plots = []
-    
-    # print(paths, "\n")
-    for path in paths:
-        print(path[0], ":", path[1])
-        print("Total cost:", path[0])
-        print("Path:", " -> ".join(map(str, path[1])))
-        print()
-        plots.append(plot_route_map(path[1]))
-        
-    for plot in plots:
-        plot.show()
-    
-    # dashboard_interface()
- 
+    root.mainloop()
     
         
 if __name__ == "__main__":
