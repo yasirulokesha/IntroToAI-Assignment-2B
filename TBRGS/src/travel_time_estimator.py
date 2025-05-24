@@ -3,7 +3,7 @@ import numpy as np
 # from data_processing import process_scats_data
 from models.LSTM_model import LSTM_prediction
 
-def calculate_travel_time(graph, origin_id, destination_id, timestamp):
+def calculate_travel_time(graph, origin_id, destination_id, timestamp, model):
     
     print(f"Calculating travel time from {origin_id} to {destination_id} ")
     

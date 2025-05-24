@@ -1,6 +1,9 @@
 import pandas as pd
 import osmnx as ox
 import networkx as nx
+import matplotlib
+matplotlib.use("Agg")
+
 import matplotlib.pyplot as plt
 
 def plot_route_map(router):
@@ -76,88 +79,4 @@ def plot_route_map(router):
             print(f"⚠️ No path between SCATS {route_scats[i]} and {route_scats[i+1]}")
             continue
     
-    
-    # plt.show()
-    return plt
-    # return fig
-
-
-# # if __name__ == "__main__":
-# #     plot_route_map()
-
-# # # Show final map
-# # plt.title("SCATS Sites and Defined Route")
-# # plt.show()
-
-
-# # route_plotter.py
-# import pandas as pd
-# import osmnx as ox
-# import networkx as nx
-# import matplotlib.pyplot as plt
-
-# def plot_route_map(router):
-#     # Route input
-#     route_scats = router
-
-#     # Load SCATS data
-#     df = pd.read_csv("TBRGS/data/processed/map_data.csv").dropna(subset=['SCATS Number', 'NB_LATITUDE', 'NB_LONGITUDE'])
-#     df['SCATS Number'] = df['SCATS Number'].astype(int)
-
-#     lat_center = -37.8222815
-#     lon_center = 145.0657007
-
-#     # Road filter
-#     main_road_filter = (
-#         '["highway"~"motorway|trunk|primary|secondary|tertiary|motorway_link|trunk_link|primary_link"]'
-#     )
-
-#     # Load OSM network
-#     G = ox.graph_from_point(
-#         center_point=(lat_center, lon_center),
-#         dist=5000,
-#         network_type='drive',
-#         custom_filter=main_road_filter
-#     )
-
-#     # Map SCATS sites to OSM nodes
-#     scats_sites = df[['SCATS Number', 'NB_LATITUDE', 'NB_LONGITUDE']].copy()
-#     scats_sites['osmid'] = scats_sites.apply(
-#         lambda row: ox.nearest_nodes(G, row['NB_LONGITUDE'], row['NB_LATITUDE']),
-#         axis=1
-#     )
-
-#     # Set up figure for manual plotting
-#     fig, ax = plt.subplots(figsize=(10, 6), dpi=100)
-#     fig.patch.set_facecolor('white')
-
-#     # Draw road network manually
-#     for u, v, data in G.edges(data=True):
-#         x1, y1 = G.nodes[u]['x'], G.nodes[u]['y']
-#         x2, y2 = G.nodes[v]['x'], G.nodes[v]['y']
-#         ax.plot([x1, x2], [y1, y2], color='#cccccc', linewidth=1, alpha=0.9)
-
-#     # Plot SCATS sites
-#     for _, row in scats_sites.iterrows():
-#         osmid = row['osmid']
-#         x, y = G.nodes[osmid]['x'], G.nodes[osmid]['y']
-#         ax.plot(x, y, marker='o', color='#88bef5', markersize=6)
-#         ax.text(x + 0.0015, y, str(int(row['SCATS Number'])), fontsize=6, color='black')
-
-#     # Plot route
-#     scats_dict = dict(zip(scats_sites['SCATS Number'], scats_sites['osmid']))
-#     route_osm = [scats_dict[s] for s in route_scats if s in scats_dict]
-
-#     for i in range(len(route_osm) - 1):
-#         try:
-#             path = nx.shortest_path(G, route_osm[i], route_osm[i + 1], weight='length')
-#             coords = [(G.nodes[n]['x'], G.nodes[n]['y']) for n in path]
-#             xs, ys = zip(*coords)
-#             ax.plot(xs, ys, color='#324e7b', linewidth=3, alpha=0.9)
-#         except (nx.NetworkXNoPath, nx.NodeNotFound):
-#             print(f"⚠️ No path between SCATS {route_scats[i]} and {route_scats[i + 1]}")
-
-#     ax.set_title("SCATS Sites and Defined Route")
-#     ax.axis("off")
-
-#     return fig  # ✅ Return the figure (NOT plt)
+    return plt 

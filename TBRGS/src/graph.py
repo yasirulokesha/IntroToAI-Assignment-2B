@@ -59,6 +59,12 @@ class RoadGraph:
         self.edges[from_node].append((to_node, time_cost))
         self.nodes[from_node].add_neighbor(to_node)
     
+    # Remove a node from the graph
+    def remove_all_edges(self):
+        self.edges.clear()
+        for node in self.nodes.values():
+            node.neighbors.clear()
+    
     # Print the graph (NODES + EDGES)
     def print_graph(self):
         print("SCATS:")

@@ -28,6 +28,8 @@ def find_k_shortest_routes(graph, start_id, end_id, k=5):
             for neighbor_id, edge_cost in graph.edges[last_node]:
                 if neighbor_id not in path:  # Avoid cycles
                     new_path = path + [neighbor_id]
+                    if edge_cost == None :
+                        continue
                     new_cost = float(cost) + float(edge_cost)
                     heapq.heappush(queue, (new_cost, new_path))
 
