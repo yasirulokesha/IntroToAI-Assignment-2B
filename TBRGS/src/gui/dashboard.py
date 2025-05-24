@@ -10,7 +10,7 @@ class TBRGSApp:
     def __init__(self, root, graph):
         self.root = root
         self.root.title("Traffic-Based Route Guidance System")
-        self.root.geometry(self.center_window(1200, 1024))
+        self.root.geometry(self.center_window(1200, 1000))
 
         self.loading = False
         self.searched = False
@@ -41,12 +41,12 @@ class TBRGSApp:
 
     def build_gui(self):
         # Left Panel
-        self.left_frame = tk.Frame(self.root, width=480, bg="white", padx=20, pady=20)
+        self.left_frame = tk.Frame(self.root, width=480, bg="#203354", padx=20, pady=20)
         self.left_frame.pack(side="left", fill="y")
 
         tk.Label(
             self.left_frame, text="Traffic-Based Route Guidance System",
-            font=("Modern", 20, "bold"), fg="black", bg="white", wraplength=200, justify="center"
+            font=("Modern", 20, "bold"), fg="white", bg="#203354", wraplength=200, justify="center"
         ).pack(pady=(20, 50))
 
         self.origin = self.add_dropdown("Origin", self.scats_sites)
@@ -62,12 +62,12 @@ class TBRGSApp:
         search_button.pack(side="bottom", pady=20)
 
         # Right Panel
-        self.right_frame = tk.Frame(self.root, bg="lightgray")
+        self.right_frame = tk.Frame(self.root, bg="white")
         self.right_frame.pack(side="right", fill="both", expand=True)
 
     def add_dropdown(self, label_text, options):
-        label = customtkinter.CTkLabel(self.left_frame, text=label_text, width=40, height=30, fg_color='transparent', text_color='black', font=("Modern", 14, "bold"))
-        label.pack(anchor="w", pady=(2))
+        label = customtkinter.CTkLabel(self.left_frame, text=label_text, width=40, height=30, fg_color='transparent', text_color='white', font=("Modern", 14, "bold"))
+        label.pack(anchor="w", pady=1)
         var = customtkinter.StringVar(value="Select an option")
         dropdown = customtkinter.CTkComboBox(self.left_frame, values=options, width=240, height=30, variable=var)
         dropdown.pack(pady=(0, 40))
@@ -75,7 +75,6 @@ class TBRGSApp:
 
     def search_routes(self):
         self.loading = True
-        self.searched = True
         self.create_right_frame()
         self.root.update()  # Update the GUI immediately
         print("Search triggered")
@@ -85,7 +84,14 @@ class TBRGSApp:
         print(f"Time: {self.time.get()}")
         print(f"Model: {self.model.get()}")
         print("Generating routes...")
-        self.generate_routes()
+        
+        if any(value.get() == "Select an option" for value in [self.origin, self.destination, self.day, self.time, self.model]):
+            tk.messagebox.showwarning("Input Error", "Please select all fields before searching.")
+        else:
+            self.searched = True
+            self.generate_routes()
+            
+        self.loading = False
         self.create_right_frame()
         
     def create_right_frame(self):
@@ -99,13 +105,13 @@ class TBRGSApp:
             #     ImageTk.PhotoImage(frame.copy().convert("RGBA").resize((150, 150), Image.LANCZOS))
             #     for frame in ImageSequence.Iterator(gif_image)
             # ]
-            # gif_label = tk.Label(self.right_frame, bg="lightgray", bd=0)
+            # gif_label = tk.Label(self.right_frame, bg="white", bd=0)
             # gif_label.place(relx=0.5, rely=0.45, anchor="center")
             # self.animate_gif(gif_label, gif_frames)
 
             loading_label = tk.Label(
                 self.right_frame, text="Loading...",
-                bg="lightgray", fg="black", font=("Modern", 16, "bold")
+                bg="white", fg="black", font=("Modern", 16, "bold")
             )
             loading_label.place(relx=0.5, rely=0.55, anchor="center")
             
@@ -116,7 +122,7 @@ class TBRGSApp:
                 # Title
                 tk.Label(
                     self.right_frame, text="SCATS Map",
-                    bg="lightgray", fg="black", font=("Modern", 25, "bold")
+                    bg="white", fg="black", font=("Modern", 25, "bold")
                 ).pack(pady=20)
                 # Load and process image
                 img = Image.open("TBRGS/src/gui/map.jpg").convert("RGBA")
@@ -129,7 +135,7 @@ class TBRGSApp:
                     self.photos = []
                 self.photos.append(photo)
 
-                label = tk.Label(self.right_frame, image=photo, bg="lightgray", bd=0)
+                label = tk.Label(self.right_frame, image=photo, bg="white", bd=0)
                 label.pack(padx=10, pady=10)  # ✅ FIXED: no expand=True
         
     def show_image_panel(self):
@@ -139,9 +145,9 @@ class TBRGSApp:
             widget.destroy()
             
         # Scrollable Canvas Setup
-        canvas = tk.Canvas(self.right_frame, bg="lightgray", highlightthickness=0)
+        canvas = tk.Canvas(self.right_frame, bg="white", highlightthickness=0)
         scrollbar = tk.Scrollbar(self.right_frame, orient="vertical", command=canvas.yview)
-        scrollable_frame = tk.Frame(canvas, bg="lightgray")
+        scrollable_frame = tk.Frame(canvas, bg="white")
 
         scrollable_frame.bind(
             "<Configure>",
@@ -159,14 +165,14 @@ class TBRGSApp:
         # Title
         tk.Label(
             scrollable_frame, text=f"Route Information",
-            bg="lightgray", fg="black", font=("Modern", 20, "bold"), justify="left", anchor="w",
+            bg="white", fg="black", font=("Modern", 20, "bold"), justify="left", anchor="w",
             padx=20, pady=10
         ).pack(padx=20, pady=(10, 1), anchor="w")
         
         tk.Label(
             scrollable_frame,
             text=f"Origin : {self.origin.get()}",
-            bg="lightgray",
+            bg="white",
             fg="black",
             font=("Modern", 13),
             wraplength=400,  # Set a width for wrapping
@@ -179,7 +185,7 @@ class TBRGSApp:
         tk.Label(
             scrollable_frame,
             text=f"Destination : {self.destination.get()}",
-            bg="lightgray",
+            bg="white",
             fg="black",
             font=("Modern", 13),
             wraplength=400,  # Set a width for wrapping
@@ -192,7 +198,7 @@ class TBRGSApp:
         tk.Label(
             scrollable_frame,
             text=f"Day : {self.day.get()}",
-            bg="lightgray",
+            bg="white",
             fg="black",
             font=("Modern", 13),
             wraplength=400,  # Set a width for wrapping
@@ -205,7 +211,7 @@ class TBRGSApp:
         tk.Label(
             scrollable_frame,
             text=f"Time : {self.time.get()}",
-            bg="lightgray",
+            bg="white",
             fg="black",
             font=("Modern", 13),
             wraplength=400,  # Set a width for wrapping
@@ -218,7 +224,7 @@ class TBRGSApp:
         tk.Label(
             scrollable_frame,
             text=f"Model : {self.model.get()}",
-            bg="lightgray",
+            bg="white",
             fg="black",
             font=("Modern", 13),
             wraplength=400,  # Set a width for wrapping
@@ -231,7 +237,7 @@ class TBRGSApp:
         tk.Label(
             scrollable_frame,
             text=f"Total Routes : {len(self.paths)}",
-            bg="lightgray",
+            bg="white",
             fg="black",
             font=("Modern", 13),
             wraplength=400,  # Set a width for wrapping
@@ -262,11 +268,11 @@ class TBRGSApp:
         def add_map_image(image_path, path, time_estimation):
             try:
                 # Add route text
-                route_text = tk.Label(scrollable_frame, text=f"Route: \n{' → '.join(map(str, map(int, path)))}", font=("Modern", 14, "bold"), wraplength=400, fg="black", bg="lightgray")
+                route_text = tk.Label(scrollable_frame, text=f"Route: \n{' → '.join(map(str, map(int, path)))}", font=("Modern", 14, "bold"), wraplength=400, fg="black", bg="white")
                 route_text.pack(padx=10, pady=(0, 10), anchor="center")
                 minutes = int(time_estimation)
                 seconds = int((time_estimation - minutes) * 60)
-                route_text = tk.Label(scrollable_frame, text=f"Total Time Estimation: {minutes}min {seconds}sec", font=("Modern", 14, "bold"), wraplength=400, fg="black", bg="lightgray")
+                route_text = tk.Label(scrollable_frame, text=f"Total Time Estimation: {minutes}min {seconds}sec", font=("Modern", 14, "bold"), wraplength=400, fg="black", bg="white")
                 route_text.pack(padx=10, pady=(0, 5), anchor="center")
                 
                 img = Image.open(image_path).convert("RGBA")
@@ -279,17 +285,17 @@ class TBRGSApp:
                     self.photos = []
                 self.photos.append(photo)
 
-                label = tk.Label(scrollable_frame, image=photo, bg="lightgray", bd=0)
+                label = tk.Label(scrollable_frame, image=photo, bg="white", bd=0)
                 label.pack(padx=10, pady=10) 
             
                 
             except FileNotFoundError:
-                tk.Label(scrollable_frame, text=f"❌ {image_path} not found!", bg="lightgray", fg="red").pack(pady=30)
+                tk.Label(scrollable_frame, text=f"❌ {image_path} not found!", bg="white", fg="red").pack(pady=30)
     
         num_of_paths = len(self.paths)
         
         if num_of_paths == 0:
-            tk.Label(scrollable_frame, text="❌ No routes found!", bg="lightgray", fg="red").pack(pady=30, anchor="center")
+            tk.Label(scrollable_frame, text="❌ No routes found!", bg="white", fg="red").pack(pady=30, anchor="center")
         else:
             for i in range(num_of_paths):
                 image_path = f"TBRGS/src/gui/route_maps/route_{i}.jpg"
@@ -328,13 +334,13 @@ class TBRGSApp:
         #     ImageTk.PhotoImage(frame.copy().convert("RGBA").resize((150, 150), Image.LANCZOS))
         #     for frame in ImageSequence.Iterator(gif_image)
         # ]
-        # gif_label = tk.Label(self.right_frame, bg="lightgray", bd=0)
+        # gif_label = tk.Label(self.right_frame, bg="white", bd=0)
         # gif_label.place(relx=0.5, rely=0.45, anchor="center")
         # self.animate_gif(gif_label, gif_frames)
 
         # loading_label = tk.Label(
         #     self.right_frame, text="Loading...",
-        #     bg="lightgray", fg="black", font=("Modern", 16, "bold")
+        #     bg="white", fg="black", font=("Modern", 16, "bold")
         # )
         # loading_label.place(relx=0.5, rely=0.55, anchor="center")
         # loading_label.pack(side="right", fill="both")
@@ -360,17 +366,20 @@ class TBRGSApp:
         plots = []
         
         # print(paths, "\n")
-        for path in paths:
+        for i, path in enumerate(paths):
             print(path[0], ":", path[1])
             print("Total cost:", path[0])
             print("Path:", " -> ".join(map(str, path[1])))
             print()
-            plots.append(plot_route_map(path[1]))
+            plot_route_map(path[1]).savefig(f"TBRGS/src/gui/route_maps/route_{i}.jpg", dpi=100, bbox_inches='tight')
+            # plots.append(plot_route_map(path[1]))
         
-        # Save each plot
-        for i, plot in enumerate(plots):
-            plot.savefig(f"TBRGS/src/gui/route_maps/route_{i}.jpg", dpi=100, bbox_inches='tight')
-            plot.close()
+        # # Save each plot
+        # for i in enumerate(plots):
+        #     plot = plots[i]
+
+        #     plot.savefig(f"TBRGS/src/gui/route_maps/route_{i}.jpg", dpi=100, bbox_inches='tight')
+        #     plot.close()
         
             
         self.loading = False

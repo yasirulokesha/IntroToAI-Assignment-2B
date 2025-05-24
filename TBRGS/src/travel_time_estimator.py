@@ -3,6 +3,7 @@ import numpy as np
 # from data_processing import process_scats_data
 from models.LSTM_model import LSTM_prediction
 from models.GRU_model import GRU_prediction
+from models.RNN_model import RNN_prediction
 
 def calculate_travel_time(graph, origin_id, destination_id, timestamp, model):
     
@@ -25,8 +26,11 @@ def calculate_travel_time(graph, origin_id, destination_id, timestamp, model):
     elif model == "gru":
         # Get the flow data using the LSTM model
         flow = GRU_prediction(destination_id, timestamp)
+    elif model == "rnn":
+        # Get the flow data using the LSTM model
+        flow = RNN_prediction(destination_id, timestamp)
     else:
-        print(f"Model is not supported. ")
+        print(f"Model is not supported.")
     
     if flow is None:
         print("Flow data is not available.")
