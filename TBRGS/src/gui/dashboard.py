@@ -4,12 +4,14 @@ from tkinter import ttk
 from PIL import Image, ImageTk, ImageDraw, ImageSequence
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import customtkinter
+import threading
 
 
 class TBRGSApp:
     def __init__(self, root, graph):
         self.root = root
         self.root.title("Traffic-Based Route Guidance System")
+        self.root.configure(bg="white")
         self.root.geometry(self.center_window(1200, 1000))
 
         self.loading = False
@@ -75,8 +77,6 @@ class TBRGSApp:
 
     def search_routes(self):
         self.loading = True
-        self.create_right_frame()
-        self.root.update()  # Update the GUI immediately
         print("Search triggered")
         print(f"Origin: {self.origin.get()}")
         print(f"Destination: {self.destination.get()}")
@@ -91,31 +91,29 @@ class TBRGSApp:
             self.searched = True
             self.generate_routes()
             
-        self.loading = False
-        self.create_right_frame()
         
     def create_right_frame(self):
         for widget in self.right_frame.winfo_children():
             widget.destroy()
             
         if self.loading:
-            # gif_path = "TBRGS/src/gui/loading_gif.gif"
-            # gif_image = Image.open(gif_path)
-            # gif_frames = [
-            #     ImageTk.PhotoImage(frame.copy().convert("RGBA").resize((150, 150), Image.LANCZOS))
-            #     for frame in ImageSequence.Iterator(gif_image)
-            # ]
-            # gif_label = tk.Label(self.right_frame, bg="white", bd=0)
-            # gif_label.place(relx=0.5, rely=0.45, anchor="center")
-            # self.animate_gif(gif_label, gif_frames)
+            gif_path = "TBRGS/src/gui/loading_gif.gif"
+            gif_image = Image.open(gif_path)
+            gif_frames = [
+                ImageTk.PhotoImage(frame.copy().convert("RGBA").resize((150, 150), Image.LANCZOS))
+                for frame in ImageSequence.Iterator(gif_image)
+            ]
+            gif_label = tk.Label(self.right_frame, bg="white", bd=0)
+            gif_label.place(relx=0.5, rely=0.45, anchor="center")
+            self.animate_gif(gif_label, gif_frames)
 
             loading_label = tk.Label(
-                self.right_frame, text="Loading...",
+                self.right_frame, text="Image Processing...",
                 bg="white", fg="black", font=("Modern", 16, "bold")
             )
             loading_label.place(relx=0.5, rely=0.55, anchor="center")
             
-        else:
+        if not self.loading:
             if self.searched and self.origin.get() != None and self.destination.get() != None:
                 self.show_image_panel()
             else:
@@ -246,10 +244,7 @@ class TBRGSApp:
             padx=20,
             pady=0
         ).pack(padx=20, pady=1, anchor="w")
-        
-        
-        
-        
+            
         # ✅ Enable mousewheel / touchpad scroll gestures
         def _on_mousewheel(event):
             if event.num == 4 or event.delta > 0:
@@ -320,70 +315,64 @@ class TBRGSApp:
 
     def generate_routes(self):
         self.loading = True
+        # self.right_frame.pack_forget()
         
-        self.right_frame.pack_forget()
+        # Clear right frame and hide scrollable content
+        for widget in self.right_frame.winfo_children():
+            widget.destroy()
         
-        # splash = loding_splash()
-        # self.root.update()
-        splash = tk.Toplevel()
-        splash.overrideredirect(True)  # Removes title bar
-        
-        # gif_path = "TBRGS/src/gui/loading_gif.gif"
-        # gif_image = Image.open(gif_path)
-        # gif_frames = [
-        #     ImageTk.PhotoImage(frame.copy().convert("RGBA").resize((150, 150), Image.LANCZOS))
-        #     for frame in ImageSequence.Iterator(gif_image)
-        # ]
-        # gif_label = tk.Label(self.right_frame, bg="white", bd=0)
-        # gif_label.place(relx=0.5, rely=0.45, anchor="center")
-        # self.animate_gif(gif_label, gif_frames)
+        gif_path = "TBRGS/src/gui/loading_gif.gif"
+        gif_image = Image.open(gif_path)
+        self.gif_frames = [
+            ImageTk.PhotoImage(frame.copy().convert("RGBA").resize((200, 200), Image.LANCZOS))
+            for frame in ImageSequence.Iterator(gif_image)
+        ]
 
-        # loading_label = tk.Label(
-        #     self.right_frame, text="Loading...",
-        #     bg="white", fg="black", font=("Modern", 16, "bold")
-        # )
-        # loading_label.place(relx=0.5, rely=0.55, anchor="center")
-        # loading_label.pack(side="right", fill="both")
-        
-        from data_processing import process_scats_edges
-        
-        if (self.model != self.current_model or self.time != self.current_time):
-            self.graph = process_scats_edges(self.graph, self.day.get(), self.time.get(), self.model.get())
-            
-        self.current_model = self.model.get()
-        self.current_time = self.time.get()
-        
-        from .route_generator import plot_route_map  # import here to avoid circular issue
-        from algorithms.yens_algorithm import find_k_shortest_routes
-        
-        origin_value = self.origin.get().split(" - ")[0].strip()
-        destination_value = self.destination.get().split(" - ")[0].strip()
-        
-        paths = find_k_shortest_routes(self.graph, int(origin_value), int(destination_value), k=5)
-        
-        self.paths = paths  # Store paths for later use
-        
-        plots = []
-        
-        # print(paths, "\n")
-        for i, path in enumerate(paths):
-            print(path[0], ":", path[1])
-            print("Total cost:", path[0])
-            print("Path:", " -> ".join(map(str, path[1])))
-            print()
-            plot_route_map(path[1]).savefig(f"TBRGS/src/gui/route_maps/route_{i}.jpg", dpi=100, bbox_inches='tight')
-            # plots.append(plot_route_map(path[1]))
-        
-        # # Save each plot
-        # for i in enumerate(plots):
-        #     plot = plots[i]
+        gif_label = tk.Label(self.right_frame, bg="white", bd=0)
+        gif_label.pack(side="top", expand=True)
+        self.animate_gif(gif_label, self.gif_frames)
 
-        #     plot.savefig(f"TBRGS/src/gui/route_maps/route_{i}.jpg", dpi=100, bbox_inches='tight')
-        #     plot.close()
-        
-            
-        self.loading = False
-        splash.destroy()
-        # gif_label.destroy()
-        # loading_label.destroy()
-        self.right_frame.pack(side="right", fill="both", expand=True)
+        loading_label = tk.Label(
+            self.right_frame, text="Loading...", bg="white", fg="black", font=("Modern", 16, "bold")
+        )
+        loading_label.pack(side="top", pady=20)
+
+        self.root.update()
+
+        # === Background process for route generation ===
+        def background_task():
+            from data_processing import process_scats_edges
+            from .route_generator import plot_route_map
+            from algorithms.yens_algorithm import find_k_shortest_routes
+
+            if (self.model != self.current_model or self.time != self.current_time):
+                self.graph = process_scats_edges(self.graph, self.day.get(), self.time.get(), self.model.get())
+                self.current_model = self.model.get()
+                self.current_time = self.time.get()
+
+            origin_value = self.origin.get().split(" - ")[0].strip()
+            destination_value = self.destination.get().split(" - ")[0].strip()
+
+            paths = find_k_shortest_routes(self.graph, int(origin_value), int(destination_value), k=5)
+            self.paths = paths
+
+            for i, path in enumerate(paths):
+                print(path[0], ":", path[1])
+                print("Total cost:", path[0])
+                print("Path:", " -> ".join(map(str, path[1])))
+                print()
+                plot_route_map(path[1]).savefig(
+                    f"TBRGS/src/gui/route_maps/route_{i}.jpg", dpi=100, bbox_inches='tight'
+                )
+
+            self.loading = False
+
+            # Back to main thread to update UI
+            self.root.after(0, lambda: (
+                self.right_frame.pack(side="right", fill="both", expand=True),
+                self.show_image_panel()
+            ))
+
+        # Start background processing
+        threading.Thread(target=background_task).start()
+
