@@ -21,7 +21,7 @@ def show_splash():
     splash.geometry(f"{width}x{height}+{x}+{y}")
 
     # Optional: add a loading message or GIF
-    label = tk.Label(splash, text="Loading nodes...", font=("Helvetica", 14), bg="white", fg="black")
+    label = tk.Label(splash, text="Loading nodes and edges...", font=("Helvetica", 14), bg="white", fg="black")
     label.pack(expand=True)
 
     return splash
@@ -44,13 +44,13 @@ def main():
     # Make the main graph object
     SCATS_Graph = process_scats_data()
     
-    # # Load the edges
+    # Load the edges
     # timestamp = "2023-10-01 08:00:00"  # Example timestamp
     # model = "LSTM"  # Example model
-    # SCATS_Graph = process_scats_edges(SCATS_Graph, timestamp, model)
+    # SCATS_Graph = process_scats_edges(SCATS_Graph, "monday", "00:00", "LSTM")
     
-    # Print the graph
-    SCATS_Graph.print_graph()
+    # # Print the graph
+    # SCATS_Graph.print_graph()
 
     splash.destroy()
     root.deiconify()  # Show main window

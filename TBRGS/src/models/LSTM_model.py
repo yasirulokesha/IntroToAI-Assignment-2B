@@ -3,11 +3,18 @@ import numpy as np
 import pandas as pd
 import joblib
 import tensorflow as tf
-# import keras.models as load_model 
 from datetime import datetime, timedelta
 from sklearn.preprocessing import MinMaxScaler
 
-from .utils import replace_outliers_iqr
+# Custom function
+def replace_outliers_iqr(df, column):
+    Q1 = df[column].quantile(0.25)
+    Q3 = df[column].quantile(0.75)
+    IQR = Q3 - Q1
+    lower = Q1 - 1.5 * IQR
+    upper = Q3 + 1.5 * IQR
+    df[column] = np.where(df[column] < lower, lower, np.where(df[column] > upper, upper, df[column]))
+    return df
 
 print("Initialized Libraries...")
 print("Tensorflow version:", tf.__version__)
@@ -113,4 +120,10 @@ def LSTM_prediction(site_id, input_time):
     data_set = data[data['site_id'] == int(site_id)].sort_values("timestamp")
     predictions = lstm_prediction_engine(data_set, site_id, input_time)
     return predictions
+
+# if __name__ == "__main__":
+#     site_id = 970
+#     input_time = "2006-11-01 08:00:00"
+#     prediction = LSTM_prediction(site_id, input_time)
+#     print(f"Predicted volume for site {site_id} at {input_time}: {prediction}")
     

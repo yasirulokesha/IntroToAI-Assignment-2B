@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 # from data_processing import process_scats_data
 from models.LSTM_model import LSTM_prediction
+from models.GRU_model import GRU_prediction
 
 def calculate_travel_time(graph, origin_id, destination_id, timestamp, model):
     
@@ -14,8 +15,18 @@ def calculate_travel_time(graph, origin_id, destination_id, timestamp, model):
     # Calculate the distance between the two nodes
     distance = origin_node.distance_to(destination_node)
     
-    flow = LSTM_prediction(destination_id, timestamp)
-    # flow = 0
+    model = model.lower()
+    if model not in ["lstm", "gru", "rnn"]:
+        print(f"Model {model} is not supported. Please use 'LSTM' or 'constant'.")
+        return None
+    elif model == "lstm":
+        # Get the flow data using the LSTM model
+        flow = LSTM_prediction(destination_id, timestamp)
+    elif model == "gru":
+        # Get the flow data using the LSTM model
+        flow = GRU_prediction(destination_id, timestamp)
+    else:
+        print(f"Model is not supported. ")
     
     if flow is None:
         print("Flow data is not available.")

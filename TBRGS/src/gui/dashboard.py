@@ -22,6 +22,7 @@ class TBRGSApp:
         self.graph = graph
         self.paths = []
         self.current_model = None
+        self.current_time = None
 
     def center_window(self, width, height):
         screen_width = self.root.winfo_screenwidth()
@@ -115,12 +116,12 @@ class TBRGSApp:
                 # Title
                 tk.Label(
                     self.right_frame, text="SCATS Map",
-                    bg="lightgray", fg="black", font=("Modern", 20, "bold")
-                ).pack(pady=(10, 5))
+                    bg="lightgray", fg="black", font=("Modern", 25, "bold")
+                ).pack(pady=20)
                 # Load and process image
                 img = Image.open("TBRGS/src/gui/map.jpg").convert("RGBA")
-                img = img.resize((700, 700), Image.LANCZOS)
-                img = self.add_rounded_corners(img, radius=13)
+                img = img.resize((900, 900), Image.LANCZOS)
+                img = self.add_rounded_corners(img, radius=10)
                 photo = ImageTk.PhotoImage(img)
 
                 # Store reference to avoid GC
@@ -158,19 +159,90 @@ class TBRGSApp:
         # Title
         tk.Label(
             scrollable_frame, text=f"Route Information",
-            bg="lightgray", fg="black", font=("Modern", 16, "bold"), justify="left", anchor="w"
-        ).pack(padx=10, pady=(10, 5), anchor="w")
+            bg="lightgray", fg="black", font=("Modern", 20, "bold"), justify="left", anchor="w",
+            padx=20, pady=10
+        ).pack(padx=20, pady=(10, 1), anchor="w")
         
         tk.Label(
             scrollable_frame,
-            text=f"Origin : {self.origin.get()} \nDestination : {self.destination.get()} \nDay : {self.day.get()}, \nTime : {self.time.get()}",
+            text=f"Origin : {self.origin.get()}",
             bg="lightgray",
             fg="black",
-            font=("Modern", 14),
+            font=("Modern", 13),
             wraplength=400,  # Set a width for wrapping
             justify="left",     
-            anchor="w"          
-        ).pack(padx=10, pady=(10, 5), anchor="w")
+            anchor="w",
+            padx=20,
+            pady=0
+        ).pack(padx=20, pady=1, anchor="w")
+        
+        tk.Label(
+            scrollable_frame,
+            text=f"Destination : {self.destination.get()}",
+            bg="lightgray",
+            fg="black",
+            font=("Modern", 13),
+            wraplength=400,  # Set a width for wrapping
+            justify="left",     
+            anchor="w",
+            padx=20,
+            pady=0
+        ).pack(padx=20, pady=1, anchor="w")
+        
+        tk.Label(
+            scrollable_frame,
+            text=f"Day : {self.day.get()}",
+            bg="lightgray",
+            fg="black",
+            font=("Modern", 13),
+            wraplength=400,  # Set a width for wrapping
+            justify="left",     
+            anchor="w",
+            padx=20,
+            pady=0
+        ).pack(padx=20, pady=1, anchor="w")
+        
+        tk.Label(
+            scrollable_frame,
+            text=f"Time : {self.time.get()}",
+            bg="lightgray",
+            fg="black",
+            font=("Modern", 13),
+            wraplength=400,  # Set a width for wrapping
+            justify="left",     
+            anchor="w",
+            padx=20,
+            pady=0
+        ).pack(padx=20, pady=1, anchor="w")
+        
+        tk.Label(
+            scrollable_frame,
+            text=f"Model : {self.model.get()}",
+            bg="lightgray",
+            fg="black",
+            font=("Modern", 13),
+            wraplength=400,  # Set a width for wrapping
+            justify="left",     
+            anchor="w",
+            padx=20,
+            pady=0
+        ).pack(padx=20, pady=1, anchor="w")
+        
+        tk.Label(
+            scrollable_frame,
+            text=f"Total Routes : {len(self.paths)}",
+            bg="lightgray",
+            fg="black",
+            font=("Modern", 13),
+            wraplength=400,  # Set a width for wrapping
+            justify="left",     
+            anchor="w",
+            padx=20,
+            pady=0
+        ).pack(padx=20, pady=1, anchor="w")
+        
+        
+        
         
         # ✅ Enable mousewheel / touchpad scroll gestures
         def _on_mousewheel(event):
@@ -189,11 +261,12 @@ class TBRGSApp:
         # Helper function to load and display a map image
         def add_map_image(image_path, path, time_estimation):
             try:
-                
                 # Add route text
                 route_text = tk.Label(scrollable_frame, text=f"Route: \n{' → '.join(map(str, map(int, path)))}", font=("Modern", 14, "bold"), wraplength=400, fg="black", bg="lightgray")
                 route_text.pack(padx=10, pady=(0, 10), anchor="center")
-                route_text = tk.Label(scrollable_frame, text=f"Total Time Estimation: {time_estimation:.2f}", font=("Modern", 14, "bold"), wraplength=400, fg="black", bg="lightgray")
+                minutes = int(time_estimation)
+                seconds = int((time_estimation - minutes) * 60)
+                route_text = tk.Label(scrollable_frame, text=f"Total Time Estimation: {minutes}min {seconds}sec", font=("Modern", 14, "bold"), wraplength=400, fg="black", bg="lightgray")
                 route_text.pack(padx=10, pady=(0, 5), anchor="center")
                 
                 img = Image.open(image_path).convert("RGBA")
@@ -266,8 +339,13 @@ class TBRGSApp:
         # loading_label.place(relx=0.5, rely=0.55, anchor="center")
         # loading_label.pack(side="right", fill="both")
         
-        if (self.model != self.current_model):
-            self.graph = self.graph.process_scats_edges(self.graph, self.day.get(), self.time.get(), self.model.get())
+        from data_processing import process_scats_edges
+        
+        if (self.model != self.current_model or self.time != self.current_time):
+            self.graph = process_scats_edges(self.graph, self.day.get(), self.time.get(), self.model.get())
+            
+        self.current_model = self.model.get()
+        self.current_time = self.time.get()
         
         from .route_generator import plot_route_map  # import here to avoid circular issue
         from algorithms.yens_algorithm import find_k_shortest_routes

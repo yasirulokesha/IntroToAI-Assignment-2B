@@ -47,14 +47,15 @@ def process_scats_edges(graph, day, time, model):
     if ( len(graph.edges) != 0 ):
         graph.remove_all_edges()
         
+    # Validate day and time
     day_to_date = {
-        "Monday": "2023-10-06",
-        "Tuesday": "2023-10-07",
-        "Wednesday": "2023-10-01",
-        "Thursday": "2023-10-02",
-        "Friday": "2023-10-03",
-        "Saturday": "2023-10-04",
-        "Sunday": "2023-10-05"  
+        "Monday": "2006-11-01",
+        "Tuesday": "2006-11-01",
+        "Wednesday": "2006-11-01",
+        "Thursday": "2006-11-01",
+        "Friday": "2006-11-01",
+        "Saturday": "2006-11-01",
+        "Sunday": "2006-11-01"  
     }
         
     if day not in day_to_date:
@@ -63,14 +64,23 @@ def process_scats_edges(graph, day, time, model):
     # Combine date and time, add seconds
     timestamp  = f"{day_to_date[day]} {time}:00"
     
+    print(f"Processing edges for {day} at {time} using model {model} with timestamp {timestamp}")
+    # exit()
+    
     # Add edges to the graph
     for index, row in edges.iterrows():      
         from_node = row['site_id']
         to_nodes = row.iloc[1:].dropna().tolist() 
         for to_node in to_nodes:
             graph.add_edge(from_node, to_node, calculate_travel_time(graph, from_node, to_node, timestamp, model))
-            
-    return graph
+    
+    final_graph = RoadGraph()
+    final_graph.nodes = graph.nodes
+    final_graph.edges = graph.edges
+    
+    return final_graph
+    
+    # return graph
 
 
 # if __name__ == "__main__":
